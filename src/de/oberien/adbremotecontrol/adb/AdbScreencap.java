@@ -15,7 +15,7 @@ public class AdbScreencap extends AdbExecOut {
 
     public AdbScreencap(boolean useBase64) {
         super("screencap "
-            + (Config.imageFormat.equals("jpg") ? "-j" : "-p")
+            + ("-p")
             + (useBase64 ? " | base64 -w 0" : "")
         );
         this.useBase64 = useBase64;

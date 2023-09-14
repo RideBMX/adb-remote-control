@@ -15,16 +15,42 @@ public class ScreenshotThread extends Thread {
         this.screenPanel = screenPanel;
         this.adbDevice = adbDevice;
     }
-
-    public void run() {
-        while (!Thread.interrupted()) {
-            BufferedImage screenshot = adbDevice.screenshot();
-            screenPanel.setScreenshot(screenshot);
+    
+    private static final long REFRESH_INTERVAL_MS = 0;
+    
+    private void runGameLoop() {
+        // update the game repeatedly
+        while (true) {
+            long durationMs = redraw();
             try {
-                Thread.sleep(Config.timeout);
-            } catch (InterruptedException ex) {
-                break;
+                Thread.sleep(Math.max(0, REFRESH_INTERVAL_MS - durationMs));
+            } catch (InterruptedException e) {
             }
         }
     }
+
+    private long redraw() {
+
+        long t = System.currentTimeMillis();
+
+        draw();
+
+        // return time taken to do redraw in ms
+        return System.currentTimeMillis() - t;
+    }
+    
+    private void draw() {
+    	BufferedImage screenshot = adbDevice.screenshot();
+        screenPanel.setScreenshot(screenshot);
+        try {
+            Thread.sleep(Config.timeout);
+        } catch (InterruptedException ex) {
+            //break;
+        }
+    }
+
+    public void run() {
+    	runGameLoop();
+    }
+
 }
